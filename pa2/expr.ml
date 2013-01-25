@@ -14,6 +14,8 @@ type expr =
   | Average  of expr * expr
   | Times    of expr * expr
   | Thresh   of expr * expr * expr * expr	
+  | Square   of expr
+  | Average3 of expr * expr * expr
 
 (*
 exprToString : expr -> string
@@ -28,7 +30,9 @@ let rec exprToString e = match e with
     | Times (a, b) -> (exprToString a) ^ "*" ^ (exprToString b)
     | Thresh (a, b, c, d) -> (exprToString a) ^ "<" ^ (exprToString b) ^ "?" ^
     (exprToString c) ^ ":" ^ (exprToString d)
-    | _ -> "expr"
+    | Square (a) -> (exprToString a) ^ "^2"
+    | Average3 (a, b, c) -> "(" ^ (exprToString a) ^ "+" ^ (exprToString b) ^ "+"
+    ^ (exprToString c) ^ ")/3"
 
 (* build functions:
      Use these helper functions to generate elements of the expr
@@ -42,6 +46,8 @@ let buildCosine(e)                 = Cosine(e)
 let buildAverage(e1,e2)            = Average(e1,e2)
 let buildTimes(e1,e2)              = Times(e1,e2)
 let buildThresh(a,b,a_less,b_less) = Thresh(a,b,a_less,b_less)
+let buildSquare(e)                 = Square(e)
+let buildAverage3(e1,e2,e3)        = Average3(e1,e2,e3)
 
 
 let pi = 4.0 *. atan 1.0
@@ -59,11 +65,9 @@ let rec eval (e,x,y) = match e with
     | Times (a, b) -> (eval (a, x, y)) *. eval (b, x, y)
     | Thresh (a, b, c, d) -> if eval(a, x, y) < eval (b, x, y) then eval (c, x,
     y) else eval (d, x, y)
-    (*
-    | Thresh (a, b, c, d) -> (exprToString a) ^ "<" ^ (exprToString b) ^ "?" ^
-    (exprToString c) ^ ":" ^ (exprToString d)
-    | _ -> "expr"
-    *)
+    | Average3 (a, b, c) -> ((eval (a, x, y)) +. (eval (b, x, y)) +. (eval (c, x,
+    y))) /. 3.0
+    | Square a -> eval (a, x, y) *. eval (a, x, y)
 
 (* (eval_fn e (x,y)) evaluates the expression e at the point (x,y) and then
  * verifies that the result is between -1 and 1.  If it is, the result is returned.  

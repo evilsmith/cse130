@@ -19,9 +19,12 @@
    the expression.
 *)
 
-let rec build (rand,depth) = failwith "to be implemented"
+let rec build (rand,depth) = match (rand, depth) with
+    | (_, 0) -> if rand (0, 1) = 0 then buildX() else buildY()
+    | (_, n) -> let n = rand (0, 1) in match n with 
+    | n -> buildSine (build (rand, depth - 1))
 
-let rec build2 (rand,depth) = failwith "to be implemented"
+let rec build2 (rand,depth) = build(rand, depth)
 
 (* g1,g2,g3,c1,c2,c3 : unit -> int * int * int
  * these functions should return the parameters needed to create your 
@@ -29,13 +32,13 @@ let rec build2 (rand,depth) = failwith "to be implemented"
  * they should return (depth,seed1,seed2)
  *)
 
-let g1 () = failwith "to be implemented"  
-let g2 () = failwith "to be implemented"  
-let g3 () = failwith "to be implemented"  
+let g1 () = 1, 10, 100
+let g2 () = 20, 30, 8
+let g3 () = 9, 999, 100
 
-let c1 () = failwith "to be implemented"
-let c2 () = failwith "to be implemented" 
-let c3 () = failwith "to be implemented" 
+let c1 () = 1, 10, 100
+let c2 () = 20, 30, 8
+let c3 () = 9, 999, 100
 
 (**** You should not need to modify any code below here ****)
 
