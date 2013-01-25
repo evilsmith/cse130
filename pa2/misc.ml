@@ -11,8 +11,7 @@ Returns the value of the string if it is in the list, returns default otherwise
 let rec assoc (d,k,l) =
     match l with
         | [] -> d
-        | h::t -> (match h with
-                | (key, value) -> if key = k then value else assoc (d, k, t))
+        | (key, value)::t -> if key = k then value else assoc (d, k, t)
 
 (* fill in the code wherever it says : failwith "to be written" *)
 let removeDuplicates l = 
