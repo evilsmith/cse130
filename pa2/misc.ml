@@ -13,24 +13,37 @@ let rec assoc (d,k,l) =
         | [] -> d
         | (key, value)::t -> if key = k then value else assoc (d, k, t)
 
-(* fill in the code wherever it says : failwith "to be written" *)
+(*
+removeDuplicates : int list * int list -> int list
+Returns a copy of the list with the duplicates removed
+*)
 let removeDuplicates l = 
   let rec helper (seen,rest) = 
       match rest with 
         [] -> seen
       | h::t -> 
-        let seen' = failwith "to be written" in
-        let rest' = failwith "to be written" in 
+        let seen' = if List.mem h seen then seen else h::seen in
+        let rest' = t in 
 	  helper (seen',rest') 
   in
       List.rev (helper ([],l))
 
 
-(* Small hint: see how ffor is implemented below *)
-let rec wwhile (f,b) = failwith "to be written"
+(*
+wwhile : (int -> int * bool) * int -> int
+Applies the function f on b until f ouputs false
+*)
+let rec wwhile (f,b) =
+    let (result, flag) = f b in
+        if flag then wwhile (f, result) else result
 
-(* fill in the code wherever it says : failwith "to be written" *)
-let fixpoint (f,b) = wwhile ((failwith "to be written"),b)
+(*
+fixpoint : (int -> int) * int -> int
+Applies the function f on b until f(b) = b
+*)
+let fixpoint (f,b) =
+    let result = (f b) in
+    wwhile ((fun f' -> (result, result = b)), b)
 
 
 (* ffor: int * int * (int -> unit) -> unit
