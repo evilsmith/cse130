@@ -41,8 +41,7 @@ let rec wwhile (f,b) =
 fixpoint : (int -> int) * int -> int
 Applies the function f on b until f(b) = b
 *)
-let fixpoint (f,b) =
-    wwhile ((fun x -> let result = (f x) in (result, result = b)), b)
+let fixpoint (f,b) = wwhile ((fun x -> (0, false)), 0)
 
 
 (* ffor: int * int * (int -> unit) -> unit

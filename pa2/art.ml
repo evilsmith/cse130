@@ -21,10 +21,25 @@
 
 let rec build (rand,depth) = match (rand, depth) with
     | (_, 0) -> if rand (0, 1) = 0 then buildX() else buildY()
-    | (_, n) -> let n = rand (0, 1) in match n with 
-    | n -> buildSine (build (rand, depth - 1))
+    | (_, d) -> let n = rand (0, 5) in match n with 
+        | 0 -> buildSine (build (rand, d - 1))
+        | 1 -> buildCosine (build (rand, d - 1))
+        | 2 -> buildAverage (build (rand, d - 1), build (rand, d - 1))
+        | 3 -> buildTimes (build (rand, d - 1), build (rand, d - 1))
+        | n -> buildThresh (build (rand, d - 1), build (rand, d - 1),
+        build (rand, d - 1), build (rand, d - 1))
 
-let rec build2 (rand,depth) = build(rand, depth)
+let rec build2 (rand,depth) = match (rand, depth) with
+    | (_, 0) -> if rand (0, 1) = 0 then buildX() else buildY()
+    | (_, d) -> let n = rand (0, 5) in match n with 
+        | 0 -> buildSine (build (rand, d - 1))
+        | 1 -> buildCosine (build (rand, d - 1))
+        | 2 -> buildAverage (build (rand, d - 1), build (rand, d - 1))
+        | 3 -> buildTimes (build (rand, d - 1), build (rand, d - 1))
+        | 4 -> buildThresh (build (rand, d - 1), build (rand, d - 1),
+        build (rand, d - 1), build (rand, d - 1))
+        | 5 -> buildSquare (build (rand, d - 1))
+        | n -> buildAverage3 (build (rand, d - 1), build (rand, d - 1), build (rand, d - 1))
 
 (* g1,g2,g3,c1,c2,c3 : unit -> int * int * int
  * these functions should return the parameters needed to create your 
@@ -32,13 +47,13 @@ let rec build2 (rand,depth) = build(rand, depth)
  * they should return (depth,seed1,seed2)
  *)
 
-let g1 () = 1, 10, 100
-let g2 () = 20, 30, 8
-let g3 () = 9, 999, 100
+let g1 () = 4, 10, 1
+let g2 () = 2, 30, 1
+let g3 () = 3, 500, 1
 
-let c1 () = 1, 10, 100
-let c2 () = 20, 30, 8
-let c3 () = 9, 999, 100
+let c1 () = 4, 20, 1
+let c2 () = 2, 3, 1
+let c3 () = 3, 999, 1
 
 (**** You should not need to modify any code below here ****)
 
