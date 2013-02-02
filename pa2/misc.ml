@@ -41,7 +41,9 @@ let rec wwhile (f,b) =
 fixpoint : (int -> int) * int -> int
 Applies the function f on b until f(b) = b
 *)
-let fixpoint (f,b) = wwhile ((fun x -> (0, false)), 0)
+let fixpoint (f,b) = wwhile (
+    (fun x ->(
+        let _ = print_int (f x) in (0, false), b))
 
 
 (* ffor: int * int * (int -> unit) -> unit
@@ -52,6 +54,5 @@ let fixpoint (f,b) = wwhile ((fun x -> (0, false)), 0)
 let rec ffor (low,high,f) = 
   if low>high 
   then () 
-  else let _ = f low in ffor (low+1,high,f)
-      
+  else let _ = f low in ffor (low+1,high,f) 
 (************** Add Testing Code Here ***************)
