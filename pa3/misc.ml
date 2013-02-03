@@ -29,25 +29,42 @@
 (******************* 1. Warm Up   ********************************)
 (*****************************************************************)
 
+(*
+sqsum : int list -> int 
+Squares each element in the list and returns the sum
+*)
 let sqsum xs = 
-  let f a x = failwith "to be implemented" in
-  let base = failwith "to be implemented" in
+  let f a x = a + (x * x) in
+  let base = 0 in
     List.fold_left f base xs
 
+(*
+pipe : ('a -> 'a) list -> ('a -> 'a)
+Returns a function that executes each function in the list sequentially on the
+input
+*)
 let pipe fs = 
-  let f a x = failwith "to be implemented" in
-  let base = failwith "to be implemented" in
+  let f a x = fun x' -> x (a x') in
+  let base = fun x -> x in
     List.fold_left f base fs
 
+(*
+sepConcat : string -> string list -> -> string
+Concatenates the strings in the list into a string separated by sep
+*)
 let rec sepConcat sep sl = match sl with 
   | [] -> ""
   | h :: t -> 
-      let f a x = failwith "to be implemented" in
-      let base = failwith "to be implemented" in
-      let l = failwith "to be implemented" in
+      let f a x = a ^ sep ^ x in
+      let base = h in
+      let l = t in
         List.fold_left f base l
 
-let stringOfList f l = failwith "to be implemented"
+(*
+stringOfList : ('a -> string) -> 'a list -> string
+Return the string representation of the input list
+*)
+let stringOfList f l = "[" ^ sepConcat "; " (List.map f l) ^ "]"
 
 (*****************************************************************)
 (******************* 2. Big Numbers ******************************)
