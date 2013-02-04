@@ -99,7 +99,7 @@ removeZero : int list -> int list
 Removes zeros at the beinning of the list
 *)
 let rec removeZero l = match l with
-    | h::t -> if not (h = 0) then l else removeZero t
+    | h::t -> if h = 0 then removeZero t else l
     | _ -> []
 
 
