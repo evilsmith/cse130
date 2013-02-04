@@ -38,6 +38,7 @@ let sqsum xs =
   let base = 0 in
     List.fold_left f base xs
 
+
 (*
 pipe : ('a -> 'a) list -> ('a -> 'a)
 Returns a function that executes each function in the list sequentially on the
@@ -47,6 +48,7 @@ let pipe fs =
   let f a x = fun x' -> x (a x') in
   let base = fun x -> x in
     List.fold_left f base fs
+
 
 (*
 sepConcat : string -> string list -> -> string
@@ -60,6 +62,7 @@ let rec sepConcat sep sl = match sl with
       let l = t in
         List.fold_left f base l
 
+
 (*
 stringOfList : ('a -> string) -> 'a list -> string
 Return the string representation of the input list
@@ -70,12 +73,36 @@ let stringOfList f l = "[" ^ sepConcat "; " (List.map f l) ^ "]"
 (******************* 2. Big Numbers ******************************)
 (*****************************************************************)
 
-let rec clone x n = failwith "to be implemented" 
+(*
+clone : 'a -> int -> 'a list
+Create a list containing n elements of x
+*)
+let rec clone x n = match n with
+    | n when n > 0 -> x :: clone x (n - 1)
+    | _ -> []
 
-let rec padZero l1 l2 = failwith "to be implemented"
 
-let rec removeZero l = failwith "to be implemented"
+(*
+padZero : int list -> int list -> int list * int list
+Returns two lists filled with 0's at the beginning so they are of equal length
+*)
+let rec padZero l1 l2 = match l1, l2 with
+    | h1::t1, h2::t2 -> [], []
 
+
+(*
+removeZero : int list -> int list
+Removes zeros at the beinning of the list
+*)
+let rec removeZero l = match l with
+    | h::t -> if not (h = 0) then l else removeZero t
+    | _ -> []
+
+
+(*
+bigAdd : int list -> int list -> int list
+Returns a list containing the sum of the two input lists
+*)
 let bigAdd l1 l2 = 
   let add (l1, l2) = 
     let f a x = failwith "to be implemented" in
@@ -86,8 +113,18 @@ let bigAdd l1 l2 =
   in 
     removeZero (add (padZero l1 l2))
 
-let rec mulByDigit i l = failwith "to be implemented"
+(*
+mulByDigit : int -> int list -> int list
+Returns the product of an integer and big int
+*)
+let rec mulByDigit i l = match l with
+    | h::t -> h * i / 10 :: List.map (fun x -> if (i * x) < 10 then i * x
+    else (i * x) - 10) l
 
+(*
+padZero : int list -> int list -> int list * int list
+Returns two lists filled with 0's at the beginning so they are of equal length
+*)
 let bigMul l1 l2 = 
   let f a x = failwith "to be implemented" in
   let base = failwith "to be implemented" in
