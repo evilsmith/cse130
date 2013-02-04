@@ -109,11 +109,19 @@ Returns a list containing the sum of the two input lists
 *)
 let bigAdd l1 l2 = 
   let add (l1, l2) = 
-    let f a x = failwith "to be implemented" in
-    let base = failwith "to be implemented" in
-    let args = failwith "to be implemented" in
-    let (_, res) = List.fold_left f base args in
-      res
+    let f a x =
+        let (x1, x2) = x in
+        let (carry, acc) = a in
+        let sum = x1 + x2 + carry in
+        let digit = sum mod 10 in
+        let carry = sum / 10 in
+        let l = digit :: acc in
+        carry, l
+    in
+    let base = (0, []) in
+    let args = List.rev (List.combine l1 l2) in
+    let (carry, res) = List.fold_left f base args in
+      carry :: res
   in 
     removeZero (add (padZero l1 l2))
 
@@ -124,6 +132,7 @@ Returns the product of an integer and big int
 let rec mulByDigit i l = match l with
     | h::t -> h * i / 10 :: List.map (fun x -> if (i * x) < 10 then i * x
     else (i * x) - 10) l
+    | _ -> []
 
 (*
 padZero : int list -> int list -> int list * int list
