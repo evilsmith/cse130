@@ -86,8 +86,12 @@ let rec clone x n = match n with
 padZero : int list -> int list -> int list * int list
 Returns two lists filled with 0's at the beginning so they are of equal length
 *)
-let rec padZero l1 l2 = match l1, l2 with
-    | h1::t1, h2::t2 -> [], []
+let rec padZero l1 l2 =
+    let n = abs (List.length l1 - List.length l2) in
+    let zeroes = clone 0 n in
+    if List.length l1 > List.length l2
+    then l1, zeroes @ l2
+    else zeroes @ l1, l2
 
 
 (*
