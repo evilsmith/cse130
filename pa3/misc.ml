@@ -116,8 +116,7 @@ let bigAdd l1 l2 =
         let digit = sum mod 10 in
         let carry = sum / 10 in
         let l = digit :: acc in
-        carry, l
-    in
+        carry, l in
     let base = (0, []) in
     let args = List.rev (List.combine l1 l2) in
     let (carry, res) = List.fold_left f base args in
@@ -129,18 +128,42 @@ let bigAdd l1 l2 =
 mulByDigit : int -> int list -> int list
 Returns the product of an integer and big int
 *)
-let rec mulByDigit i l = match l with
-    | h::t -> h * i / 10 :: List.map (fun x -> if (i * x) < 10 then i * x
-    else (i * x) - 10) l
-    | _ -> []
+let rec mulByDigit i l =
+  let mul i l = 
+    let f a x =
+        let (carry, acc) = a in
+        let prod = x * i + carry in
+        let digit = prod mod 10 in
+        let carry = prod / 10 in
+        let res = digit :: acc in
+        carry, res in
+    let base = (0, []) in
+    let args = List.rev l in
+    let (carry, res) = List.fold_left f base args in
+      carry :: res
+  in 
+    removeZero (mul i l)
 
 (*
-padZero : int list -> int list -> int list * int list
-Returns two lists filled with 0's at the beginning so they are of equal length
+bigMul : int list -> int list -> int list
+Returns the product of two big ints
 *)
 let bigMul l1 l2 = 
-  let f a x = failwith "to be implemented" in
-  let base = failwith "to be implemented" in
-  let args = failwith "to be implemented" in
-  let (_, res) = List.fold_left f base args in
-    res
+  let f a x =
+      let (x1, x2) = x in
+      let product = mulByDigit x1 x2 in
+      let (acc, _) = padZero a product in
+      mulByDigit 10 (bigAdd acc product) in
+  let base = [] in
+  let args =
+      let l1, l2 = padZero l1 l2 in
+      let rec pair l1 l2 = match l1 with
+         | [] -> [0, l2]
+         | h::t -> (h, l2) :: (pair t l2)
+      in
+         pair l1 l2
+      in
+  let res = List.fold_left f base args in
+    let h::t = List.rev res in
+    let x::y = t in
+    List.rev y
