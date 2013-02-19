@@ -126,27 +126,34 @@ let rec eval (evn,e) = match e with
     | If(p, t, f) -> let Bool cond = eval(evn,p) in
             if cond then eval(evn,t) else eval(evn,f)
     | Let(v,a,b) -> let evn = (v, eval(evn, a))::evn in eval(evn, b)
-    | Letrec(v,a,b) -> let evn = (v, eval(evn, a))::evn in eval(evn, b)
-    | Bin(a, op, b) ->
+    | Letrec(v,a,b) ->
+            begin match eval(evn,a) with
+                Closure(evn',n,x,e) -> let f = Closure(evn, Some v,x,e) in
+                        eval((v,f)::evn, b)
+                | x -> eval((v,x)::evn, b)
+            end
+    | App(a, b) -> let arg = eval(evn,b) in
+            let Closure(evn',n,x,e) = eval(evn,a) in
+            eval((x,arg)::evn',e)
+    | Fun(x,e) -> Closure(evn, None, x, e)
+    | Bin(a,op,b) ->
             let a = eval (evn, a) in
             let b = eval (evn, b) in
-            match (a, op, b) with
+            begin match (a, op, b) with
                 | Int a, Plus, Int b -> Int (a + b)
                 | Int a, Minus, Int b -> Int (a - b)
                 | Int a, Mul, Int b -> Int (a * b)
                 | Int a, Div, Int b -> Int (a / b)
                 | Int a, Eq, Int b -> Bool (a = b)
-                | Bool a, Eq, Bool b -> Bool (a = b)
                 | Int a, Ne, Int b -> Bool (a <> b)
-                | Bool a, Ne, Bool b -> Bool (a <> b)
                 | Int a, Lt, Int b -> Bool (a < b)
                 | Int a, Le, Int b -> Bool (a <= b)
+                | Bool a, Eq, Bool b -> Bool (a = b)
+                | Bool a, Ne, Bool b -> Bool (a <> b)
                 | Bool a, And, Bool b -> Bool (a && b)
                 | Bool a, Or, Bool b -> Bool (a || b)
                 | _ -> raise (MLFailure ("invalid operation"))
-
-    (*)
-    raise (MLFailure "variable not bound: x")
-*)
+            end
+    | _ -> raise (MLFailure ("invalid operation"))
 
 (**********************     Testing Code  ******************************)
