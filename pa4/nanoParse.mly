@@ -41,7 +41,7 @@ open Nano
 %left OR
 %left AND
 %left EQ NE LT LE
-%right COLONCOLON SEMI
+%right COLONCOLON SEMI RBRAC
 %left PLUS MINUS
 %left MUL DIV
 %left APP
@@ -68,17 +68,17 @@ exp3:
     | exp4                      { $1 }
 
 exp4:
-      exp4 EQ exp5              { Bin($1,Eq,$3) }
-    | exp4 NE exp5              { Bin($1,Ne,$3) }
-    | exp4 LT exp5              { Bin($1,Lt,$3) }
-    | exp4 LE exp5              { Bin($1,Le,$3) }
+      exp4 EQ exp9              { Bin($1,Eq,$3) }
+    | exp4 NE exp9              { Bin($1,Ne,$3) }
+    | exp4 LT exp9              { Bin($1,Lt,$3) }
+    | exp4 LE exp9              { Bin($1,Le,$3) }
     | exp9                      { $1 }
 
 exp9:
       exp5 COLONCOLON exp9      { Bin($1,Cons,$3) }
     | exp5 SEMI exp9            { Bin($1,Cons,$3) }
     | exp9 RBRAC                { Bin($1,Cons,NilExpr) }
-    | LBRAC exp9 {$2}
+    | LBRAC exp9                { $2 }
     | exp5                      { $1 }
 
 exp5:
