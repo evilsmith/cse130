@@ -127,16 +127,14 @@ let rec eval (evn,e) = match e with
             if cond then eval(evn,t) else eval(evn,f)
     | Let(v,a,b) -> let evn = (v, eval(evn, a))::evn in eval(evn, b)
     | Letrec(v,a,b) ->
-            begin match eval(evn,a) with
-                Closure(evn',n,x,e) ->
-                    let f = Closure(evn,Some v,x,e) in
-                    let f = Closure((v,f)::evn',Some v,x,e) in
-                        eval((v,f)::evn, b)
-                | x -> eval((v,x)::evn, b)
-            end
+            let Closure(evn',_,x,e) as f = eval(evn,a) in
+            let f' = Closure((v,f)::evn',Some v,x,e) in
+                eval((v,f')::evn@evn',b)
     | App(a, b) -> let arg = eval(evn,b) in
-            let Closure(evn',n,x,e) = eval(evn,a) in
-            eval((x,arg)::evn',e)
+            begin match eval(evn,a) with
+                  Closure(evn',None,x,e) -> eval((x,arg)::evn, e)
+                | Closure(evn',Some n,x,e) as f -> eval((n,arg)::(x,f)::evn, e)
+            end
     | Fun(x,e) -> Closure(evn, None, x, e)
     | Bin(a,op,b) ->
             let a = eval (evn, a) in
