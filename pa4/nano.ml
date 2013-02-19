@@ -128,7 +128,9 @@ let rec eval (evn,e) = match e with
     | Let(v,a,b) -> let evn = (v, eval(evn, a))::evn in eval(evn, b)
     | Letrec(v,a,b) ->
             begin match eval(evn,a) with
-                Closure(evn',n,x,e) -> let f = Closure(evn, Some v,x,e) in
+                Closure(evn',n,x,e) ->
+                    let f = Closure(evn,Some v,x,e) in
+                    let f = Closure((v,f)::evn',Some v,x,e) in
                         eval((v,f)::evn, b)
                 | x -> eval((v,x)::evn, b)
             end
