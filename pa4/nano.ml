@@ -105,8 +105,48 @@ let listAssoc (k,l) =
 
 (*********************** Your code starts here ****************************)
 
-let lookup (x,evn) = failwith "to be written"
+(*
+lookup: string * env -> value 
+finds most recent binding
+*)
+let lookup (x,evn) =
+    match listAssoc (x,evn) with
+        | Some x -> x
+        | _ -> raise (MLFailure ("variable not bound: " ^ x))
 
-let rec eval (evn,e) = failwith "to be written"
+(*
+eval : env * expr -> value
+Evaluates the expression and raises an exception if a variable is unbound
+*)
+let rec eval (evn,e) = match e with
+    | Const x -> Int x
+    | Var x -> lookup(x,evn)
+    | True -> Bool true
+    | False -> Bool false
+    | If(p, t, f) -> let Bool cond = eval(evn,p) in
+            if cond then eval(evn,t) else eval(evn,f)
+    | Let(v,a,b) -> let evn = (v, eval(evn, a))::evn in eval(evn, b)
+    | Letrec(v,a,b) -> let evn = (v, eval(evn, a))::evn in eval(evn, b)
+    | Bin(a, op, b) ->
+            let a = eval (evn, a) in
+            let b = eval (evn, b) in
+            match (a, op, b) with
+                | Int a, Plus, Int b -> Int (a + b)
+                | Int a, Minus, Int b -> Int (a - b)
+                | Int a, Mul, Int b -> Int (a * b)
+                | Int a, Div, Int b -> Int (a / b)
+                | Int a, Eq, Int b -> Bool (a = b)
+                | Bool a, Eq, Bool b -> Bool (a = b)
+                | Int a, Ne, Int b -> Bool (a <> b)
+                | Bool a, Ne, Bool b -> Bool (a <> b)
+                | Int a, Lt, Int b -> Bool (a < b)
+                | Int a, Le, Int b -> Bool (a <= b)
+                | Bool a, And, Bool b -> Bool (a && b)
+                | Bool a, Or, Bool b -> Bool (a || b)
+                | _ -> raise (MLFailure ("invalid operation"))
+
+    (*)
+    raise (MLFailure "variable not bound: x")
+*)
 
 (**********************     Testing Code  ******************************)
