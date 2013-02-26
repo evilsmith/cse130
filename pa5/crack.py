@@ -8,8 +8,16 @@ def load_words(filename,regexp):
     """Load the words from the file filename that match the regular
        expression regexp.  Returns a list of matching words in the order
        they are in the file."""
+    result = []
     f = open(filename)
-    return re.findall(regexp, f.read())
+    pattern = re.compile(regexp)
+    for word in f.readlines():
+        word = word.strip()
+        if pattern.match(word):
+            result.append(word)
+    return result
+
+    #return re.findall(regexp, f.read())
 
 def transform_reverse(str):
     """return a list with the original string and the reversal of the original string."""
@@ -50,20 +58,30 @@ def load_passwd(filename):
        dictionaries with fields "account", "password", "UID", "GID",
        "GECOS", "directory", and "shell", each mapping to the
        corresponding field of the file."""
-    f = open(filename)
     result = []
-    for line in f.read().split('\n'):
-        if not line:
-            continue
-        entry = {}
-        (entry['account'], entry['password'], entry['UID'], entry['GID'],
-        entry['GECOS'], entry['directory'], entry['shell']) = line.split(':')
-        result.append(entry)
+    with open(filename) as f:
+        for line in f.readlines():
+            if not line:
+                continue
+            entry = {}
+            (entry['account'], entry['password'], entry['UID'], entry['GID'],
+            entry['GECOS'], entry['directory'], entry['shell']) = line.split(':')
+            result.append(entry)
     return result
 
 
 def crack_pass_file(fn_pass,words,out):
     """Crack as many passwords in file fn_pass as possible using words
        in the file words"""
-    raise Failure("to be written")
+    regex = r'.{6,8}'
+    words = load_words(words, regex)
+    entries = load_passwd(fn_pass)
+    of = open(out, 'w')
+    for entry in entries:
+        user = entry['account']
+        encoded = entry['password']
+        for plain in words:
+            if check_pass(plain, encoded):
+                of.write('{}={}\n'.format(user, plain))
+    return
 
