@@ -76,12 +76,33 @@ def crack_pass_file(fn_pass,words,out):
     regex = r'.{6,8}'
     words = load_words(words, regex)
     entries = load_passwd(fn_pass)
-    of = open(out, 'w')
-    for entry in entries:
-        user = entry['account']
-        encoded = entry['password']
-        for plain in words:
-            if check_pass(plain, encoded):
-                of.write('{}={}\n'.format(user, plain))
+    hard = []
+    with open(out, 'w') as of:
+        # first pass w/ no transformations
+        for entry in entries:
+            hard.append(entry)
+            user = entry['account']
+            encoded = entry['password']
+            for plain in words:
+                if check_pass(plain, encoded):
+                    hard.pop()
+                    of.write('{}={}\n'.format(user, plain))
+
+        # apply transformations to word list
+        s = set()
+        for word in words:
+            for w in transform_capitalize(word):
+                s.add(w)
+            for w in transform_digits(word):
+                s.add(w)
+        words = list(s)
+
+        # econd pass
+        for entry in hard:
+            user = entry['account']
+            encoded = entry['password']
+            for plain in words:
+                if check_pass(plain, encoded):
+                    of.write('{}={}\n'.format(user, plain))
     return
 
