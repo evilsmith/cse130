@@ -27,15 +27,16 @@ class Vector(object):
 	
 	def __add__(self, other):
 		"""add the vector and another sequence"""
-		return Vector(([sum(x) for x in zip(list(self), list(other))]))
+		return Vector(([x + y for x, y in zip(list(self), list(other))]))
 
 	def __radd__(self, other):
 		"""add the vector and another sequence"""
-		return Vector(([sum(x) for x in zip(list(self), list(other))]))
+		return Vector(([x + y for x, y in zip(list(self), list(other))]))
 
 	def __iadd__(self, other):
 		"""add another sequence to the vector"""
-		self.data = Vector([sum(x) for x in zip(self, other)])
+		self.data =  Vector(([x + y for x, y in zip(list(self), list(other))]))
+		return self.data
 
 	def dot(self, other):
 		"""return the dot product of a vector and another sequence"""
@@ -48,10 +49,29 @@ class Vector(object):
 		"""return the nth element in the vector"""
 		return self.data[n]
 
-	def __setitem(self, n, x):
+	def __setitem__(self, n, x):
 		"""set the nth element in the vector"""
-		return self.data[n]
 		self.data[n] = x
+
+	def cmp_helper(self, other):
+		"""return the sequence in descending order"""
+		return zip(sorted(self, reverse=True), sorted(other, reverse=True))
+
+	def __gt__(self, other):
+		if not isinstance(other, Vector):
+			return self > other
+		for x, y in self.cmp_helper(other):
+			if not x > y:
+				return False
+		return True
+
+	def __ge__(self, other):
+		if not isinstance(other, Vector):
+			return self >= other
+		for x, y in self.cmp_helper(other):
+			if not x >= y:
+				return False
+		return True
 
 	def __repr__(self):
 		"""return the string representation of the vector"""
