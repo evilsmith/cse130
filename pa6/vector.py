@@ -73,6 +73,9 @@ class Vector(object):
 				return False
 		return True
 
+	def __lt__(self, other):
+		return not self.__ge__(other)
+
 	def __repr__(self):
 		"""return the string representation of the vector"""
 		return "Vector(" + repr(self.data) + ")"
