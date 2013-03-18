@@ -94,15 +94,25 @@ overworked_helper(X) :- taqueria(U,V,_),taqueria(Y,Z,_),isin(X,V),isin(X,Z),U\=Y
 % remove duplicates
 overworked(X) :- bagof(Y, overworked_helper(Y), Ys),remove_duplicates(Ys,Z),isin(X,Z).
 
-total_cost(X,K) :- throw(to_be_done). 
+% basecase
+cost_helper([],X) :- X is 0.
+% get the cost of each item
+cost_helper([H|T],X) :- cost(H,Y), cost_helper(T,Z), X is Y + Z.
+total_cost(X,K) :- ingredients(X,Y), cost_helper(Y,K).
 
-has_ingredients(X,L) :- throw(to_be_done).
+% basecase
+ingredients_helper([],X).
+% get the ingredients in each item
+ingredients_helper([H|T],X) :- isin(H,X),ingredients_helper(T,X).
+has_ingredients(X,L) :- ingredients(X,Y), ingredients_helper(L,Y).
 
-avoids_ingredients(X,L) :- throw(to_be_done). 
+avoids_helper([],L).
+avoids_helper([H|T],L) :- \+isin(H,L), avoids_helper(T,L).
+avoids_ingredients(X,L) :- ingredients(X,Y),avoids_helper(L,Y).
 
-p1(L,X) :- throw(to_be_done). 
+p1(L,X) :- bagof(Y,has_ingredients(Y,X),L).
 
-p2(L,Y) :- throw(to_be_done). 
+p2(L,Y) :- bagof(X,avoids_ingredients(X,Y),L).
 
 find_items(L,X,Y) :- p1(L1,X),p2(L2,Y),intersection(L1,L2,L).  
 
