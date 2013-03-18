@@ -82,11 +82,17 @@ taqueria(la_milpas_quatros, [jiminez, martin, antonio, miguel],
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 1: Rules
 
-available_at(X,Y) :- throw(to_be_done).
+available_at(X,Y) :- taqueria(Y,_,Z),isin(X,Z).
 
-multi_available(X) :- throw(to_be_done). 
+% find items available at multiple locations
+multi_available_helper(X) :- available_at(X,Y), available_at(X,Z), Y\=Z. 
+% remove duplicates
+multi_available(X) :- bagof(Y, multi_available_helper(Y), Z), remove_duplicates(Z,R), isin(X,R).
 
-overworked(X) :- throw(to_be_done). 
+% find workers that dont work at the same shop
+overworked_helper(X) :- taqueria(U,V,_),taqueria(Y,Z,_),isin(X,V),isin(X,Z),U\=Y.
+% remove duplicates
+overworked(X) :- bagof(Y, overworked_helper(Y), Ys),remove_duplicates(Ys,Z),isin(X,Z).
 
 total_cost(X,K) :- throw(to_be_done). 
 
